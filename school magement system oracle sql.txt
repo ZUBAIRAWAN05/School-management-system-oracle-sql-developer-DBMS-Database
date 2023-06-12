@@ -1,0 +1,264 @@
+
+---------------------------------Login Table---------------------------------
+create table LOGIN_FORM(
+UserName varchar(50) NOT NULL,
+PASS varchar(50) NOT NULL)
+
+insert into LOGIN_FORM values ('admin123@gmail.com' , 123)
+
+select * from LOGIN_FORM
+
+--------------------------------Student Table-------------------------------
+CREATE TABLE Student_(
+    std_ID NUMBER PRIMARY KEY,
+    stdName VARCHAR2(30),
+    DOB DATE,
+    Addmission_date DATE,
+    Address VARCHAR2(100),
+    Gender CHAR,
+    class_ID NUMBER,
+    CONSTRAINT fk_class
+        FOREIGN KEY (class_ID)
+        REFERENCES Class (ClassID)
+);
+
+insert into Student_ values (1, 'Salman' , TO_DATE('2023-06-11', 'YYYY-MM-DD'), TO_DATE('2023-06-11', 'YYYY-MM-DD') ,'Mirza', 'M' , 1 )
+insert into Student_ values (2, 'Zia' , TO_DATE('2023-06-11', 'YYYY-MM-DD'), TO_DATE('2023-06-11', 'YYYY-MM-DD') ,'Hazro', 'M' , 2 )
+insert into Student_ values (3, 'Saif' , TO_DATE('2023-06-11', 'YYYY-MM-DD'), TO_DATE('2023-06-11', 'YYYY-MM-DD') ,'Mirza', 'M' , 3 )
+select * from Student_
+
+-----------------------------------Joins---------------------------------
+
+-------------------------------2-----------------------------------------
+select Student_.std_ID ,stdName, DOB ,Addmission_date , Address ,Gender, Class.ClassID , ClassName
+from Student_
+join Class 
+on Student_.class_ID = Class.ClassID
+
+-----------------------------3------------------------------------------
+
+select TeacherSubject.Id , Subjects.sub_id , Subjects.Name as SubjectName , Teacher.ID as Teacher_ID, Teacher.Name
+from TeacherSubject
+join Subjects
+on TeacherSubject.Sub_id = Subjects.sub_id 
+join Teacher 
+on TeacherSubject.TeacherID = Teacher.ID
+------------------------------2-----------------------------------------
+select Subjects.sub_id , Name , Class.ClassID  ,ClassName
+from Subjects
+join Class
+on Subjects.Class_ID = Class.ClassID
+--------------------------------------3--------------------------------
+select Class.ClassID , ClassName , Student_.std_ID , Student_.stdName,  Gender , Address , Subjects.Name as Subject
+from Class
+join Student_
+on Class.ClassID  = Student_.class_ID
+join Subjects
+on Class.ClassID = Subjects.Class_ID
+
+
+---------------------------------------4-----------------------------------
+select Exam.ExamId ,Student_.std_ID , Student_.stdName, ClassName ,  Subjects.Name as SubjectName, Exam.TotalMarks, Exam.OutOfMarks
+from Exam 
+join Subjects
+on Exam.sub_id=Subjects.sub_id
+join Class
+on Class.ClassID = Subjects.Class_ID
+join Student_
+on Student_.class_ID = Class.ClassID
+
+----------------------------3-------------------------------------------
+
+select Fee.FeeId, Student_.std_ID as Student_ID, Student_.stdName as StudentName , Class.ClassName , Fee.Period , Amount
+from Fee
+join Student_
+on Fee.std_id = Student_.std_ID   
+join Class
+on Class.ClassID = Student_.class_ID
+
+-------------------------------3-----------------------------------------
+
+select StudentAttendance.Id , Student_.std_ID , Student_.stdName as StudentName ,
+Class.ClassName as StudentClass , StudentAttendance.Status , S_ATT_Date
+from StudentAttendance
+join Student_
+on StudentAttendance.std_ID = Student_.std_ID
+join Class
+on Class.ClassID = Student_.class_ID
+
+--------------------------------2-----------------------------------------
+
+select TeacherAttendance.Id , Teacher.ID as Teacher_ID , Name , TeacherAttendance.Status , T_ATT_Date
+from TeacherAttendance
+join Teacher
+on Teacher.ID =  TeacherAttendance.TeacherI
+
+----------------------------------Teacher Table----------------------------
+
+CREATE TABLE Teacher(
+    ID NUMBER(10) PRIMARY KEY,
+    Name VARCHAR2(25),
+    Phone_No VARCHAR2(15),
+    DOB DATE,
+    Address VARCHAR2(100),
+    Gender CHAR
+);
+
+insert into Teacher values (1, 'Waseem Khan', '03643647585' , TO_DATE('2023-06-11', 'YYYY-MM-DD'), 'Mansehra' , 'M')
+insert into Teacher values (2, 'Jamal Ahmed', '03643647584' , TO_DATE('2023-06-12', 'YYYY-MM-DD'), 'Mianwali' , 'M')
+insert into Teacher values (3, 'Zahoor Tanoli', '03643647583' , TO_DATE('2023-06-13', 'YYYY-MM-DD'), 'Mehria' , 'M')
+insert into Teacher values (4, 'Mehreen Wahab', '03643647582' , TO_DATE('2023-06-14', 'YYYY-MM-DD'), 'Farooq e Azam' , 'F')
+select * from Teacher
+
+---------------------------------Subject Table-------------------------------
+CREATE TABLE Subjects(
+    sub_id NUMBER(10) PRIMARY KEY,
+    Name VARCHAR2(30),
+    Class_ID NUMBER,
+    CONSTRAINT fk_subjects_class
+        FOREIGN KEY (Class_ID)
+        REFERENCES Class (ClassID)
+);
+ 
+insert into Subjects values (1,'Physics', 1)
+insert into Subjects values (2,'Chemistry', 2)
+insert into Subjects values (3,'Maths', 3)
+select * from Teacher
+
+select * from Subjects
+
+----------------------------------TeacherSubject-------------------------------
+CREATE TABLE TeacherSubject(
+    Id NUMBER(10) PRIMARY KEY,
+    Sub_id NUMBER(10),
+    TeacherID NUMBER(10),
+    CONSTRAINT fk_teachersubject_subject
+        FOREIGN KEY (Sub_id)
+        REFERENCES Subjects (sub_id),
+    CONSTRAINT fk_teachersubject_teacher
+        FOREIGN KEY (TeacherID)
+        REFERENCES Teacher (ID)
+);
+
+insert into TeacherSubject values (1, 1, 1)
+insert into TeacherSubject values (2, 2, 2)
+insert into TeacherSubject values (3, 3, 3)
+select * from TeacherSubject
+
+-----------------------------------Class Table-------------------------------------
+create table Class(
+ClassID int primary key, --//primary key
+ClassName varchar(10) NOT NULL)
+
+insert into Class values (1 , '9th')
+insert into Class values (2 , '10th')
+insert into Class values (3 , '8th')
+
+select * from Class
+
+-----------------------------------Fee Table------------------------------------------
+
+CREATE TABLE Fee(
+    FeeId NUMBER(10) PRIMARY KEY,
+    std_id NUMBER(10),
+    Cl_ID NUMBER(10),
+    Period DATE,
+    Amount NUMBER(10),
+    CONSTRAINT fk_fee_student
+        FOREIGN KEY (std_id)
+        REFERENCES Student_ (std_ID),
+    CONSTRAINT fk_fee_class
+        FOREIGN KEY (Cl_ID)
+        REFERENCES Class (ClassID)
+);
+
+insert into Fee values(101,1,1,TO_DATE('2023-05-11', 'YYYY-MM-DD'),100000)
+insert into Fee values(102,2,2,TO_DATE('2023-05-11', 'YYYY-MM-DD'),90000)
+insert into Fee values(103,3,3,TO_DATE('2023-05-11', 'YYYY-MM-DD'),80000)
+
+select * from Fee
+
+--------------------------------------Events Table---------------------------------------
+CREATE TABLE Events(
+    Id NUMBER(10) PRIMARY KEY,
+    EventName VARCHAR2(100),
+    EventDate DATE,
+    Duration_In_Hours NUMBER(10)
+);
+
+select * from Events
+
+--------------------------------------Exam Table----------------------------------------
+
+CREATE TABLE Exam(
+    ExamId NUMBER(10) PRIMARY KEY,
+    stdID NUMBER(10),
+    ClassID NUMBER(10),
+    sub_id NUMBER(10),
+    TotalMarks NUMBER(10),
+    OutOfMarks NUMBER(10),
+    CONSTRAINT fk_exam_student
+        FOREIGN KEY (stdID)
+        REFERENCES Student_ (std_ID),
+    CONSTRAINT fk_exam_class
+        FOREIGN KEY (ClassID)
+        REFERENCES Class (ClassID),
+    CONSTRAINT fk_exam_subject
+        FOREIGN KEY (sub_id)
+        REFERENCES Subjects (sub_id)
+);
+select * from EXAM
+
+
+--------------------------------------TeacherAttendance-----------------------------------
+
+CREATE TABLE TeacherAttendance(
+    Id NUMBER(10) PRIMARY KEY,
+    TeacherID NUMBER(10),
+    Status VARCHAR2(20),
+    T_ATT_Date DATE,
+    CONSTRAINT fk_teacherattendance_teacher
+        FOREIGN KEY (TeacherID)
+        REFERENCES Teacher (ID)
+);
+select * from TeacherAttendance
+
+----------------------------------StudentAttendance-------------------------------------
+CREATE TABLE StudentAttendance(
+    Id NUMBER(10) PRIMARY KEY,
+    std_ID NUMBER(10),
+    ClassID NUMBER(10),
+    Status VARCHAR2(20),
+    S_ATT_Date DATE,
+    CONSTRAINT fk_studentattendance_student
+        FOREIGN KEY (std_ID)
+        REFERENCES Student_ (std_ID),
+    CONSTRAINT fk_studentattendance_class
+        FOREIGN KEY (ClassID)
+        REFERENCES Class (ClassID)
+);
+
+select * from StudentAttendance
+
+delete from StudentAtttendance where Id = 2
+select * from StudentAtttendance
+delete from TeacherAttendance where Id = 1
+select * from TeacherAttendance
+select * from Student_
+
+
+delete from Teacher where Id = 34
+
+
+
+
+
+
+
+
+
+
+
+
+
+
